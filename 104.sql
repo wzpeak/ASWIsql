@@ -1,82 +1,6 @@
 
-WITH
-    mast_item
-    as
-    (
-        SELECT
-          item_info.INVENTORY_ITEM_ID                                   INVENTORY_ITEM_ID
-         , item_info.ORGANIZATION_ID                                    ITEM_ORG
-        , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
-        , item_info.ITEM_NUMBER                                         ITEM_NUMBER
-        , item_info.PRIMARY_UOM_CODE                                    UOM
---         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
---         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
 
 
-            ,orders.RESOURCE_ID                                                  RESOURCE_ID
-            ,orders.TRANSACTION_ID                                               TRANSACTION_ID
-        -- , orders.QUANTITY_IN_QUEUE                                            FIRM_QUANTITY
-        -- , orders.FIRM_STATUS                                              FIRM_STATUS
-        -- , orders.ORDER_TYPE                                               ORDER_TYPE
-     --    , orders.SUPPLIER_ID                                                 SUPPLIER_ID
---         , COALESCE(orders.SUPPLIER_SITE_ID ,-99991)                                             SUPPLIER_SITE_ID
-        -- ,SUM(trx.TRANSACTION_QUANTITY)/24                               AVG_WEEK
-
-
-        FROM
-            MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
-       , EGP_SYSTEM_ITEMS_V                       item_info
---        , MSC_ANALYTIC_ORG_FLAT_V_DYD              mrp_store_org
-       , MSC_RESOURCE_REQUIREMENTSRC_V                  orders
-       , MSC_ANALYTIC_ITEMS                       item_method
-       ,  (select  *   from  MSC_SYSTEM_ITEMS_V where PLAN_ID = -1  )                     mrp_item
-       , INV_ORG_PARAMETERS                       item_store_org
-
-       , MSC_AP_ITEM_CATEGORIES_V                   item_cat
-        --        , MSC_DIM_CSTM_LEVEL_DATA_V                item_lvl
-
-        --        , INV_MATERIAL_TXNS                        trx
-
-
-
-        WHERE
-        mrp_name.PLAN_ID = orders.PLAN_ID
-            ---find  only one mrp item
-            AND orders.ASSEMBLY_ITEM_ID =  mrp_item.INVENTORY_ITEM_ID
-            AND orders.ORGANIZATION_ID   =  mrp_item.ORGANIZATION_ID
-            --          find  real item  by  id and  org_code
-            AND mrp_item.ITEM_NAME           =  item_info.ITEM_NUMBER
-            AND mrp_item.ORGANIZATION_CODE   =  item_store_org.ORGANIZATION_CODE
-            AND item_info.ORGANIZATION_ID   =  item_store_org.ORGANIZATION_ID
-
-             --  filter for 'MPS planning'    both mapping  id and  org_code0
-            AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
-            AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
-            and item_method.plan_id = orders.plan_id
-
-            -- relate  item category
-            AND item_cat.INVENTORY_ITEM_ID =   item_info.INVENTORY_ITEM_ID
-            AND item_cat.ORGANIZATION_ID =   item_info.ORGANIZATION_ID
-
-            AND (item_cat.CATEGORY_ID  IN (:P_ITEM_CATE) OR 'val' IN (:P_ITEM_CATE || 'val'))
-
-
-
-            AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
-            AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
-            AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
-            AND 1 = :P_HIERARCHIES
-
---         group by   item_info.INVENTORY_ITEM_ID
---                   , item_info.ORGANIZATION_ID
---                   ,mrp_item.INVENTORY_ITEM_ID
---                   ,item_info.ITEM_NUMBER
---                   ,item_info.PRIMARY_UOM_CODE
-
-    ),
-    future_one
-    as
-    (
         SELECT
 
           item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
@@ -159,23 +83,42 @@ WITH
 
 --         group by   item_info.INVENTORY_ITEM_ID
 
-    ),
-    future_two
-    as
-    (
-        SELECT
-            item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                     RESOURCE_HOURS
-            ,orders.CUMMULATIVE_QUANTITY                      CUMMULATIVE_QUANTITY
+ UNION ALL
+
+
+      SELECT
+
+          item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+        , item_info.ORGANIZATION_ID                                   ITEM_ORG
+        , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
+        , item_info.ITEM_NUMBER                                         ITEM_NUMBER
+        , item_info.PRIMARY_UOM_CODE                                    UOM
+--         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
+--         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
+
+
+            ,orders.RESOURCE_ID                                                  RESOURCE_ID
+--             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
+
+--             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
+            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
+            ,0                                                TWO_RESOURCE_HOURS
+            ,0                                                THREE_RESOURCE_HOURS
+            ,0                                                FOUR_RESOURCE_HOURS
+
+            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
+            ,0                                                TWO_CUMMULATIVE_QUANTITY
+            ,0                                                THREE_CUMMULATIVE_QUANTITY
+            ,0                                                FOUR_CUMMULATIVE_QUANTITY
 
 
         FROM
 
-            MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
+                 MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
                 , EGP_SYSTEM_ITEMS_V                       item_info
                 , MSC_RESOURCE_REQUIREMENTSRC_V                  orders
                 , MSC_ANALYTIC_ITEMS                       item_method
-               , (select  *   from  MSC_SYSTEM_ITEMS_V where PLAN_ID = -1  )                     mrp_item
+                , (select  *   from  MSC_SYSTEM_ITEMS_V where PLAN_ID = -1  )                     mrp_item
                 , INV_ORG_PARAMETERS                       item_store_org
                  , MSC_AP_ITEM_CATEGORIES_V                   item_cat
         WHERE
@@ -188,18 +131,17 @@ WITH
             AND mrp_item.ORGANIZATION_CODE   =  item_store_org.ORGANIZATION_CODE
             AND item_info.ORGANIZATION_ID   =  item_store_org.ORGANIZATION_ID
 
-              --  filter for 'MPS planning'    both mapping  id and  org_code0
+           --  filter for 'MPS planning'    both mapping  id and  org_code0
            AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
-            AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
-             and item_method.plan_id = orders.plan_id
-
+           AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
+            and item_method.plan_id = orders.plan_id
 
 
 
 
  -- relate  item category
             AND item_cat.INVENTORY_ITEM_ID =   item_info.INVENTORY_ITEM_ID
-            AND item_cat.ORGANIZATION_ID   =   item_info.ORGANIZATION_ID
+            AND item_cat.ORGANIZATION_ID =   item_info.ORGANIZATION_ID
 
             AND (item_cat.CATEGORY_ID  IN (:P_ITEM_CATE) OR 'val' IN (:P_ITEM_CATE || 'val'))
 
@@ -222,19 +164,37 @@ WITH
 
 --         group by   item_info.INVENTORY_ITEM_ID
 
-    ),
-    future_three
-    as
-    (
-        SELECT
-            item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                     RESOURCE_HOURS
-            ,orders.CUMMULATIVE_QUANTITY                      CUMMULATIVE_QUANTITY
+     UNION ALL
+
+       SELECT
+
+          item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+        , item_info.ORGANIZATION_ID                                   ITEM_ORG
+        , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
+        , item_info.ITEM_NUMBER                                         ITEM_NUMBER
+        , item_info.PRIMARY_UOM_CODE                                    UOM
+--         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
+--         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
+
+
+            ,orders.RESOURCE_ID                                                  RESOURCE_ID
+--             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
+
+--             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
+            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
+            ,0                                                TWO_RESOURCE_HOURS
+            ,0                                                THREE_RESOURCE_HOURS
+            ,0                                                FOUR_RESOURCE_HOURS
+
+            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
+            ,0                                                TWO_CUMMULATIVE_QUANTITY
+            ,0                                                THREE_CUMMULATIVE_QUANTITY
+            ,0                                                FOUR_CUMMULATIVE_QUANTITY
 
 
         FROM
 
-            MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
+                 MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
                 , EGP_SYSTEM_ITEMS_V                       item_info
                 , MSC_RESOURCE_REQUIREMENTSRC_V                  orders
                 , MSC_ANALYTIC_ITEMS                       item_method
@@ -251,10 +211,10 @@ WITH
             AND mrp_item.ORGANIZATION_CODE   =  item_store_org.ORGANIZATION_CODE
             AND item_info.ORGANIZATION_ID   =  item_store_org.ORGANIZATION_ID
 
-              --  filter for 'MPS planning'    both mapping  id and  org_code0
+           --  filter for 'MPS planning'    both mapping  id and  org_code0
            AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
-            AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
-             and item_method.plan_id = orders.plan_id
+           AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
+            and item_method.plan_id = orders.plan_id
 
 
 
@@ -285,18 +245,37 @@ WITH
                                                         )
 
 --         group by   item_info.INVENTORY_ITEM_ID
-    ),
-    future_four
-    as
-    (
-        SELECT
-            item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                     RESOURCE_HOURS
-            ,orders.CUMMULATIVE_QUANTITY                      CUMMULATIVE_QUANTITY
+     UNION ALL
+
+       SELECT
+
+          item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+        , item_info.ORGANIZATION_ID                                   ITEM_ORG
+        , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
+        , item_info.ITEM_NUMBER                                         ITEM_NUMBER
+        , item_info.PRIMARY_UOM_CODE                                    UOM
+--         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
+--         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
+
+
+            ,orders.RESOURCE_ID                                                  RESOURCE_ID
+--             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
+
+--             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
+            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
+            ,0                                                TWO_RESOURCE_HOURS
+            ,0                                                THREE_RESOURCE_HOURS
+            ,0                                                FOUR_RESOURCE_HOURS
+
+            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
+            ,0                                                TWO_CUMMULATIVE_QUANTITY
+            ,0                                                THREE_CUMMULATIVE_QUANTITY
+            ,0                                                FOUR_CUMMULATIVE_QUANTITY
+
 
         FROM
 
-            MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
+                 MSC_ANALYTIC_PRIVATE_PLAN_V              mrp_name
                 , EGP_SYSTEM_ITEMS_V                       item_info
                 , MSC_RESOURCE_REQUIREMENTSRC_V                  orders
                 , MSC_ANALYTIC_ITEMS                       item_method
@@ -313,11 +292,10 @@ WITH
             AND mrp_item.ORGANIZATION_CODE   =  item_store_org.ORGANIZATION_CODE
             AND item_info.ORGANIZATION_ID   =  item_store_org.ORGANIZATION_ID
 
-             --  filter for 'MPS planning'    both mapping  id and  org_code0
-            AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
-            AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
+           --  filter for 'MPS planning'    both mapping  id and  org_code0
+           AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
+           AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
             and item_method.plan_id = orders.plan_id
-
 
 
 
@@ -334,7 +312,6 @@ WITH
             AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
-
             -- oders   filter
             AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
                                                         (    SELECT to_char(CALENDAR_DATE,'YYYY-MM-DD') set_time
@@ -350,7 +327,7 @@ WITH
                                                         )
 
 --         group by   item_info.INVENTORY_ITEM_ID
-    ),
+  -----------------------------------------------发你个县----------------------
 
     origin_tab  as (
 
