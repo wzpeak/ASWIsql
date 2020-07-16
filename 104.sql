@@ -12,8 +12,6 @@ with
         , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
         , item_info.ITEM_NUMBER                                         ITEM_NUMBER
         , item_info.PRIMARY_UOM_CODE                                    UOM
---         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
---         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
 
 
             ,orders.RESOURCE_ID                                                  RESOURCE_ID
@@ -71,9 +69,6 @@ with
 --             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
 
-            -- oders   filter
---             AND orders.ORDER_TYPE IN( 18,1,5,1001)
-            
 --              AND orders.PLANNED_ORDER_TYPE  IN('Buy','购买')
 
             AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
