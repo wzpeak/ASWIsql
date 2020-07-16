@@ -1,3 +1,7 @@
+with
+
+  real_tab1  as (
+
 
 
 
@@ -64,7 +68,7 @@
 
             AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
             AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
-            AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
+--             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
 
             -- oders   filter
@@ -101,13 +105,13 @@
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
-            ,0                                                TWO_RESOURCE_HOURS
+            ,0                                                ONE_RESOURCE_HOURS
+            ,orders.RESOURCE_HOURS                            TWO_RESOURCE_HOURS
             ,0                                                THREE_RESOURCE_HOURS
             ,0                                                FOUR_RESOURCE_HOURS
 
-            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
-            ,0                                                TWO_CUMMULATIVE_QUANTITY
+            ,0                                                ONE_CUMMULATIVE_QUANTITY
+            ,orders.CUMMULATIVE_QUANTITY                      TWO_CUMMULATIVE_QUANTITY
             ,0                                                THREE_CUMMULATIVE_QUANTITY
             ,0                                                FOUR_CUMMULATIVE_QUANTITY
 
@@ -149,7 +153,7 @@
 
             AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
             AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
-            AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
+--             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
 
             -- oders   filter
@@ -181,14 +185,14 @@
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
+            ,0                                            ONE_RESOURCE_HOURS
             ,0                                                TWO_RESOURCE_HOURS
-            ,0                                                THREE_RESOURCE_HOURS
+            ,orders.RESOURCE_HOURS                              THREE_RESOURCE_HOURS
             ,0                                                FOUR_RESOURCE_HOURS
 
-            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
+            ,0                                              ONE_CUMMULATIVE_QUANTITY
             ,0                                                TWO_CUMMULATIVE_QUANTITY
-            ,0                                                THREE_CUMMULATIVE_QUANTITY
+            ,orders.CUMMULATIVE_QUANTITY                       THREE_CUMMULATIVE_QUANTITY
             ,0                                                FOUR_CUMMULATIVE_QUANTITY
 
 
@@ -229,7 +233,7 @@
 
             AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
             AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
-            AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
+--             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
 
             -- oders   filter
@@ -262,15 +266,15 @@
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
-            ,orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
+            ,0                                                ONE_RESOURCE_HOURS
             ,0                                                TWO_RESOURCE_HOURS
             ,0                                                THREE_RESOURCE_HOURS
-            ,0                                                FOUR_RESOURCE_HOURS
+            ,orders.RESOURCE_HOURS                            FOUR_RESOURCE_HOURS
 
-            ,orders.CUMMULATIVE_QUANTITY                      ONE_CUMMULATIVE_QUANTITY
+            ,0                                                ONE_CUMMULATIVE_QUANTITY
             ,0                                                TWO_CUMMULATIVE_QUANTITY
             ,0                                                THREE_CUMMULATIVE_QUANTITY
-            ,0                                                FOUR_CUMMULATIVE_QUANTITY
+            ,orders.CUMMULATIVE_QUANTITY                      FOUR_CUMMULATIVE_QUANTITY
 
 
         FROM
@@ -310,7 +314,7 @@
 
             AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
             AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
-            AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
+--             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
             AND 1 = :P_HIERARCHIES
             -- oders   filter
             AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
@@ -325,45 +329,233 @@
             where CALENDAR_DATE = :P_DATE))
                                                                 )
                                                         )
+),
+ mid_tab  as (
+                 select   real_tab1.INVENTORY_ITEM_ID
+                       ,real_tab1.ITEM_ORG
+                       ,real_tab1.MRP_ITEM_ID
+                       ,real_tab1.ITEM_NUMBER
+                       ,real_tab1.UOM
+                       ,real_tab1.RESOURCE_ID
+
+                       ,sum(  real_tab1.ONE_RESOURCE_HOURS           )              ONE_HOURS
+                       ,sum(  real_tab1.TWO_RESOURCE_HOURS              )           TWO_HOURS
+                       ,sum(  real_tab1.THREE_RESOURCE_HOURS            )           THREE_HOURS
+                       ,sum(  real_tab1.FOUR_RESOURCE_HOURS             )           FOUR_HOURS
+                      ,sum(    real_tab1.ONE_CUMMULATIVE_QUANTITY         )        ONE_CUMMULATIVE_QUANTITY
+                       ,sum(    real_tab1.TWO_CUMMULATIVE_QUANTITY         )        TWO_CUMMULATIVE_QUANTITY
+                       ,sum(    real_tab1.THREE_CUMMULATIVE_QUANTITY      )         THREE_CUMMULATIVE_QUANTITY
+                       ,sum(    real_tab1.FOUR_CUMMULATIVE_QUANTITY       )         FOUR_CUMMULATIVE_QUANTITY
+
+
+                     FROM real_tab1
+                     GROUP BY
+                        real_tab1.INVENTORY_ITEM_ID
+                       ,real_tab1.ITEM_ORG
+                       ,real_tab1.MRP_ITEM_ID
+                       ,real_tab1.ITEM_NUMBER
+                       ,real_tab1.UOM
+                       ,real_tab1.RESOURCE_ID
+           ),
 
 --         group by   item_info.INVENTORY_ITEM_ID
   -----------------------------------------------发你个县----------------------
 
-    origin_tab  as (
+
+cat_tab as (
+
+      SELECT   mid_tab.*
+      ,(SUM(mid_tab.ONE_HOURS)  over( order by mid_tab.INVENTORY_ITEM_ID ) ) -  mid_tab.ONE_HOURS  as  ONE_RUNNING
+
+      ,(SUM(mid_tab.TWO_HOURS)   over( order by mid_tab.INVENTORY_ITEM_ID ) ) - mid_tab.TWO_HOURS as  TWO_RUNNING
+
+      ,(SUM(mid_tab.THREE_HOURS)   over( order by mid_tab.INVENTORY_ITEM_ID )) - mid_tab.THREE_HOURS  as  THREE_RUNNING
+
+      ,(SUM(mid_tab.FOUR_HOURS)  over( order by mid_tab.INVENTORY_ITEM_ID )) - mid_tab.FOUR_HOURS  as  FOUR_RUNNING
+       FROM     mid_tab
+
+
+)
+
+ SELECT
+        cat_tab.*
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_ONE
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_TWO
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_THREE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_FOUR
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_FIVE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_SIX
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+--
+                     THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS ONE_SEVEN
 
 
 
-SELECT   mast_item.*
-         ,future_one.RESOURCE_HOURS            ONE_HOURS
-         ,future_one.CUMMULATIVE_QUANTITY      ONE_CUMMULATIVE_QUANTITY
-         ,future_two.RESOURCE_HOURS            TWO_HOURS
-         ,future_two.CUMMULATIVE_QUANTITY      TWO_CUMMULATIVE_QUANTITY
-         ,future_three.RESOURCE_HOURS          THREE_HOURS
-         ,future_three.CUMMULATIVE_QUANTITY    THREE_CUMMULATIVE_QUANTITY
-         ,future_four.RESOURCE_HOURS           FOUR_HOURS
-         ,future_four.CUMMULATIVE_QUANTITY     FOUR_CUMMULATIVE_QUANTITY
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_ONE
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_TWO
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_THREE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_FOUR
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_FIVE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_SIX
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+--
+                     THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS TWO_SEVEN
+
+
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_ONE
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_TWO
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_THREE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_FOUR
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_FIVE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_SIX
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+--
+                     THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS THREE_SEVEN
+
+
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_ONE
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_TWO
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_THREE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_FOUR
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_FIVE
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_SIX
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+--
+                     THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
+                     ELSE  null
+           END  AS FOUR_SEVEN
 
 
 
-FROM  mast_item , future_one ,future_two , future_three ,future_four
-WHERE
--- left join  future one
-          mast_item.INVENTORY_ITEM_ID = future_one.ONE_INVENTORY_ITEM_ID
--- left join  future two
-      and  mast_item.INVENTORY_ITEM_ID = future_two.ONE_INVENTORY_ITEM_ID
--- left join  future three
-      and  mast_item.INVENTORY_ITEM_ID = future_three.ONE_INVENTORY_ITEM_ID
--- left join  future future_four
-      and  mast_item.INVENTORY_ITEM_ID = future_four.ONE_INVENTORY_ITEM_ID       )
 
-      SELECT   origin_tab.*
-      ,SUM(origin_tab.ONE_HOURS) over( order by origin_tab.INVENTORY_ITEM_ID ) as  ONE_RUNNING
+ FROM  cat_tab
 
-      ,SUM(origin_tab.TWO_HOURS) over( order by origin_tab.INVENTORY_ITEM_ID ) as  TWO_RUNNING
 
-      ,SUM(origin_tab.THREE_HOURS) over( order by origin_tab.INVENTORY_ITEM_ID ) as  THREE_RUNNING
-
-      ,SUM(origin_tab.FOUR_HOURS) over( order by origin_tab.INVENTORY_ITEM_ID ) as  FOUR_RUNNING
-      FROM     origin_tab
 
 

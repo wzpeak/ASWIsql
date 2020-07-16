@@ -38,13 +38,7 @@ AND  party_info_lg.PARTY_ID = legal_entity.PARTY_ID
   ---  AND in_head.TRX_CLASS  IN ('CM','DM','INV')
 AND ( in_head.TRX_NUMBER IN (:P_DEBIT_NOTE_NO) OR 'agn' IN (:P_DEBIT_NOTE_NO || 'agn'))  order by in_line.LINE_NUMBER
 
+SELECT ID, SUM(MONEY) OVER (ORDER BY ID) RUNNINGT_TOTAL FROM TRANS
 
-<?SUP_NAME?>
-<?SUP_ADRES1?>
-<?SUP_ADRES2?>
-<?SUP_ADRES3?>
-
-<xsl:value-of select='SUP_NAME'/>
-
-<?concat(SUP_NAME,'&#x000A;',SUP_ADRES1,'&#x000A;',SUP_ADRES2,'&#x000A;',SUP_ADRES3)?>
-<?concat(SUP_NAME,'&#x000A;',SUP_ADRES1,'&#x000A;',SUP_ADRES2,'&#x000A;',SUP_ADRES3)?>
+select a.*, sum(Amount) over ( order by Date) as Running_Amt
+from Example_Table a
