@@ -1,44 +1,20 @@
+
 SELECT
-   :P_LOGO     p_logo,
---    UPPER(regexp_replace(legal_entity.NAME,'[^0-9a-zA-Z[:space:]]'))                com_name,
-       UPPER(legal_entity.NAME)                                                            com_name,
---    UPPER(regexp_replace(legal_entity.NAME,'[^0-9a-zA-Z*\)*\(*\）*\（[:space:]]'))                com_name,
---  UPPER(legal_entity.NAME)                          com_name,
---   SUBSTR(in_head.COMMENTS,INSTR(in_head.COMMENTS,'Attn:') +5)                      attn,
- in_head.COMMENTS                     attn,
- in_head.COMMENTS                     com,
-    decode(in_head.TRX_CLASS,'DM','DEBIT NOTE', 'CM','CREDIT NOTE','INV','DEBIT NOTE','ONACC','CREDIT NOTE'  )                      trx_class,
-        --   TRIM(substr(party_info.PARTY_NAME,1, instr(party_info.PARTY_NAME,'(') -1) || substr(party_info.PARTY_NAME,instr(party_info.PARTY_NAME,')') +1) )                    customer,
-         regexp_replace(party_info.PARTY_NAME,'[^0-9a-zA-Z[:space:]]')               customer,
-        --  party_info.PARTY_NAME                      customer,
-         party_info.ADDRESS1                      address1,
-        --  party_info_lg.ADDRESS1                      lg_address1,
-         '23rd Floor, Wheelock House, 20 Pedder Street, Central, Hong Kong'                      lg_address1,
-        in_head.TRX_NUMBER,
-        in_head.TRX_DATE,
-        in_head.SPECIAL_INSTRUCTIONS               header_desc,
-        in_head.STRUCTURED_PAYMENT_REFERENCE       stru_pay,
-       in_line.DESCRIPTION,
-       in_line.EXTENDED_AMOUNT
 FROM
-     XLE_ENTITY_PROFILES                         legal_entity,
-    RA_CUSTOMER_TRX_ALL   in_head,
-    RA_CUSTOMER_TRX_LINES_ALL  in_line,
-     HZ_CUST_ACCOUNTS                       pty_act,
-    HZ_PARTIES                             party_info,
-    HZ_PARTIES                             party_info_lg
+       MSC_DIM_RESOURCE_V         re_id_parent
+      ,WIS_WORK_CENTERS_VL        work_hours
 
 WHERE
-    in_head.CUSTOMER_TRX_ID = in_line.CUSTOMER_TRX_ID
-AND  in_head.BILL_TO_CUSTOMER_ID = pty_act.CUST_ACCOUNT_ID
-AND  party_info.PARTY_ID = pty_act.PARTY_ID
----------2020/05/26-----------
-AND  party_info_lg.PARTY_ID = legal_entity.PARTY_ID
- AND in_head.LEGAL_ENTITY_ID = legal_entity.LEGAL_ENTITY_ID
-  ---  AND in_head.TRX_CLASS  IN ('CM','DM','INV')
-AND ( in_head.TRX_NUMBER IN (:P_DEBIT_NOTE_NO) OR 'agn' IN (:P_DEBIT_NOTE_NO || 'agn'))  order by in_line.LINE_NUMBER
+        re_id_parent.id =   resource_id
+    AND re_id_parent.PARENT_ID =  work_hours.WORK_CENTER_ID
 
-SELECT ID, SUM(MONEY) OVER (ORDER BY ID) RUNNINGT_TOTAL FROM TRANS
 
-select a.*, sum(Amount) over ( order by Date) as Running_Amt
-from Example_Table a
+
+
+
+ATTRIBUTE_NUMBER1
+
+
+-- select  parent_id ,id ,
+--        sum(ID )  over( partition by parent_id  order by  ID  )
+-- from   MSC_DIM_RESOURCE_V

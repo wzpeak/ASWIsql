@@ -359,7 +359,7 @@ with
 
 cat_tab as (
 
-      SELECT   mid_tab.*
+      SELECT   mid_tab.*, work_hours.ATTRIBUTE_NUMBER1
       ,(SUM(mid_tab.ONE_HOURS)  over( order by mid_tab.INVENTORY_ITEM_ID ) ) -  mid_tab.ONE_HOURS  as  ONE_RUNNING
 
       ,(SUM(mid_tab.TWO_HOURS)   over( order by mid_tab.INVENTORY_ITEM_ID ) ) - mid_tab.TWO_HOURS as  TWO_RUNNING
@@ -367,7 +367,12 @@ cat_tab as (
       ,(SUM(mid_tab.THREE_HOURS)   over( order by mid_tab.INVENTORY_ITEM_ID )) - mid_tab.THREE_HOURS  as  THREE_RUNNING
 
       ,(SUM(mid_tab.FOUR_HOURS)  over( order by mid_tab.INVENTORY_ITEM_ID )) - mid_tab.FOUR_HOURS  as  FOUR_RUNNING
-       FROM     mid_tab
+       FROM     mid_tab ,
+                 MSC_DIM_RESOURCE_V         re_id_parent
+              ,WIS_WORK_CENTERS_VL        work_hours
+      where
+        re_id_parent.id =   mid_tab.RESOURCE_ID
+    AND re_id_parent.PARENT_ID =  work_hours.WORK_CENTER_ID
 
 
 )
