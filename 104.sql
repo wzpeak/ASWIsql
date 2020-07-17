@@ -379,43 +379,43 @@ cat_tab as (
 
  SELECT
         cat_tab.*
-        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 0   AND  0 < :P_DAYS )
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_ONE
-          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 1   AND   1 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_TWO
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 2   AND   2 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_THREE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 3   AND   3 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_FOUR
-                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 4   AND   4 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_FIVE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 5   AND   5 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS ONE_SIX
-                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.ONE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 6   AND   6 < :P_DAYS )
 --
                      THEN  cat_tab.ONE_CUMMULATIVE_QUANTITY
                      ELSE  null
@@ -423,129 +423,129 @@ cat_tab as (
 
 
 
-        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 0   AND  0 < :P_DAYS )
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_ONE
-          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 1   AND   1 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_TWO
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 2   AND   2 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_THREE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 3   AND   3 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_FOUR
-                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 4   AND   4 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_FIVE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 5   AND   5 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_SIX
-                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.TWO_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 6   AND   6 < :P_DAYS )
 --
                      THEN  cat_tab.TWO_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS TWO_SEVEN
 
 
-        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 0   AND  0 < :P_DAYS )
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_ONE
-          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 1   AND   1 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_TWO
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 2   AND   2 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_THREE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 3   AND   3 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_FOUR
-                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 4   AND   4 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_FIVE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 5   AND   5 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_SIX
-                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.THREE_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 6   AND   6 < :P_DAYS )
 --
                      THEN  cat_tab.THREE_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS THREE_SEVEN
 
 
-        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 0    AND   0 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 0   AND  0 < :P_DAYS )
+        ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 0    AND   0 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 0   AND  0 < :P_DAYS )
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_ONE
-          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 1   AND   1 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 1   AND   1 < :P_DAYS )
+          ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 1   AND   1 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 1   AND   1 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_TWO
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 2   AND   2 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 2   AND   2 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 2   AND   2 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 2   AND   2 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_THREE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 3   AND   3 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 3   AND   3 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 3   AND   3 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 3   AND   3 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_FOUR
-                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 4   AND   4 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 4   AND   4 < :P_DAYS )
+                   ,  CASE      WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 4   AND   4 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 4   AND   4 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_FIVE
-                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 5   AND   5 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 5   AND   5 < :P_DAYS )
+                   ,  CASE       WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 5   AND   5 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 5   AND   5 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
            END  AS FOUR_SIX
-                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)  > = 6   AND   6 = :P_DAYS ) OR
-                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / 5)    = 6   AND   6 < :P_DAYS )
+                   ,  CASE     WHEN ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)  > = 6   AND   6 = :P_DAYS ) OR
+                            ( FLOOR(NVL(cat_tab.FOUR_RUNNING,0) / cat_tab.ATTRIBUTE_NUMBER1)    = 6   AND   6 < :P_DAYS )
 --
                      THEN  cat_tab.FOUR_CUMMULATIVE_QUANTITY
                      ELSE  null
