@@ -1,20 +1,16 @@
-
-SELECT
-FROM
-       MSC_DIM_RESOURCE_V         re_id_parent
-      ,WIS_WORK_CENTERS_VL        work_hours
-
-WHERE
-        re_id_parent.id =   resource_id
-    AND re_id_parent.PARENT_ID =  work_hours.WORK_CENTER_ID
-
-
-
-
-
-ATTRIBUTE_NUMBER1
-
-
--- select  parent_id ,id ,
---        sum(ID )  over( partition by parent_id  order by  ID  )
--- from   MSC_DIM_RESOURCE_V
+WITH
+SAWITH0 AS (select T3419886.C186392316 as c2,
+     T3419886.C51182883 as c3
+from
+     (SELECT V87912286.PLAN_ID AS C186392316,         V290189488.SHIP_FCST AS C51182883,         V290189488.PLAN_ID AS PKA_PlanId0,         V290189488.INVENTORY_ITEM_ID AS PKA_InventoryItemId0,         V290189488.ORGANIZATION_ID AS PKA_OrganizationId0,         V290189488.CUSTOMER_SITE_ID AS PKA_CustomerSiteId0,         V290189488.DEMAND_DATE AS PKA_DemandDate0,         V290189488.DEMAND_CLASS_ID AS PKA_DemandClassId0 FROM MSC_ANALYTIC_FACT_DM_V V290189488, MSC_ANALYTIC_PRIVATE_PLAN_V V87912286 WHERE V290189488.PLAN_ID = V87912286.PLAN_ID(+)) T3419886),
+SAWITH1 AS (select sum(nvl(D1.c3 , 0)) as c1,
+     D1.c2 as c2
+from
+     SAWITH0 D1
+group by D1.c2)
+select D1.c1 as c1, D1.c2 as c2, D1.c3 as c3 from ( select 0 as c1,
+     D1.c2 as c2,
+     D1.c1 as c3
+from
+     SAWITH1 D1
+order by c2 ) D1 where rownum <= 75001
