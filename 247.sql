@@ -10,6 +10,7 @@
 -- MSC_SYSTEM_ITEMS_V  名称和id的表ORGANIZATION_CODE 也有
 --INV_MATERIAL_TXNS             trx_type         id TRANSACTION_TYPE_ID    so  的 id = 33   po = 18
 --                                                  po = 1 Purchase order,po= 5 Planned order,po = 1001Planned order demand
+--  1029  =   order  type : Forcast
 -- INV_TRANSACTION_TYPES_TL     trx_type_tl      name TRANSACTION_TYPE_NAME
 -- MSC_ANALYTIC_FACT_ORD_V      order            ORDER_TYPE  = 18 = ORDER_TYPE_TEXT    SUGGESTED_DUE_DATE  FIRM_STATUS = 'Firm'
 
