@@ -52,13 +52,14 @@ with
                         -- AND ori_orders_f.ORGANIZATION_ID    =  ori_orders_f.ORGANIZATION_ID
                         -- AND ori_orders_f.SUGGESTED_DUE_DATE    =  ori_orders_f.SUGGESTED_DUE_DATE
                         AND ori_orders_f.ORDER_QUANTITY is not null
-                        AND ori_orders_f.ORDER_TYPE  = 1029  
-                         AND to_char(ori_orders_f.SUGGESTED_DUE_DATE, 'YYYY-MM-DD')  IN
+                        AND ori_orders_f.ORDER_TYPE  = 1029
+                        AND to_char(ori_orders_f.SUGGESTED_DUE_DATE, 'YYYY-MM-DD')  IN
                                                         (    SELECT to_char(CALENDAR_DATE,'YYYY-MM-DD') set_time
-                                FROM MSC_ANALYTIC_CALENDARS_V
-                                where WEEK_START_DATE  =  (select WEEK_START_DATE
-                                from MSC_ANALYTIC_CALENDARS_V
-                                where to_char(CALENDAR_DATE,'YYYY-MM-DD' ) IN ( select to_char(sum_onhand.SUGGESTED_DUE_DATE,'YYYY-MM-DD'  ) from  sum_onhand )
+                        FROM MSC_ANALYTIC_CALENDARS_V
+                        where WEEK_START_DATE  =  (select WEEK_START_DATE
+                        from MSC_ANALYTIC_CALENDARS_V
+                        where to_char(CALENDAR_DATE,'YYYY-MM-DD' ) IN ( select to_char(sum_onhand.SUGGESTED_DUE_DATE,'YYYY-MM-DD'  )
+                        from sum_onhand )
                                                                 )
                                                         )
 
@@ -82,21 +83,21 @@ with
                 , ROUND(sum_onhand.ORDER_QUANTITY/sum_forcast.ORDER_QUANTITY,2)   as day_of_cover
 
                 FROM
-                                           sum_onhand
-                      ,                    sum_forcast
+                        sum_onhand
+                      , sum_forcast
                 where
                             sum_onhand.PLAN_ID            =  sum_forcast.PLAN_ID
                         AND sum_onhand.INVENTORY_ITEM_ID  =  sum_forcast.INVENTORY_ITEM_ID
                         AND sum_onhand.ORGANIZATION_ID    =  sum_forcast.ORGANIZATION_ID
-                        -- AND sum_onhand.SUGGESTED_DUE_DATE    =  sum_forcast.SUGGESTED_DUE_DATE
-                        --   AND to_char(sum_forcast.SUGGESTED_DUE_DATE, 'YYYY-MM-DD')  IN
-                        --                                 (    SELECT to_char(CALENDAR_DATE,'YYYY-MM-DD') set_time
-                        --         FROM MSC_ANALYTIC_CALENDARS_V
-                        --         where WEEK_START_DATE  =  (select WEEK_START_DATE
-                        --         from MSC_ANALYTIC_CALENDARS_V
-                        --         where CALENDAR_DATE = sum_onhand.SUGGESTED_DUE_DATE 
-                        --                                         )
-                        --                                 )
+                -- AND sum_onhand.SUGGESTED_DUE_DATE    =  sum_forcast.SUGGESTED_DUE_DATE
+                --   AND to_char(sum_forcast.SUGGESTED_DUE_DATE, 'YYYY-MM-DD')  IN
+                --                                 (    SELECT to_char(CALENDAR_DATE,'YYYY-MM-DD') set_time
+                --         FROM MSC_ANALYTIC_CALENDARS_V
+                --         where WEEK_START_DATE  =  (select WEEK_START_DATE
+                --         from MSC_ANALYTIC_CALENDARS_V
+                --         where CALENDAR_DATE = sum_onhand.SUGGESTED_DUE_DATE 
+                --                                         )
+                --                                 )
 
                 -- group by
                 --    sum_onhand.PLAN_ID
@@ -112,7 +113,7 @@ with
         (
 
 
-                     SELECT
+                                                                        SELECT
 
                                 item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
         , item_info.ORGANIZATION_ID                                   ITEM_ORG
@@ -121,11 +122,15 @@ with
         , item_info.ITEM_NUMBER                                         ITEM_NUMBER
         , item_info.PRIMARY_UOM_CODE                                    UOM
 
-        , item_info.ATTRIBUTE6                                          ATTRIBUTE6
-        , item_info.ATTRIBUTE7                                          ATTRIBUTE7
-        , item_info.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-        , item_info.ATTRIBUTE2                                          ATTRIBUTE2
+        -- , item_info.ATTRIBUTE6                                          ATTRIBUTE6
+        -- , item_info.ATTRIBUTE7                                          ATTRIBUTE7
+        -- , item_info.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
+        -- , item_info.ATTRIBUTE2                                          ATTRIBUTE2
 
+        , item_info.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+        , item_info.ATTRIBUTE5                                          ATTRIBUTE5
+        , itemEffB.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
+        , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
@@ -141,7 +146,7 @@ with
             , 0                                                THREE_CUMMULATIVE_QUANTITY
             , 0                                                FOUR_CUMMULATIVE_QUANTITY
 
--- --             add days of  cover
+                        -- --             add days of  cover
 
 
                         FROM
@@ -156,7 +161,9 @@ with
                 , INV_ORG_PARAMETERS                       item_store_org
                 , MSC_AP_ITEM_CATEGORIES_V                   item_cat
 --                 add   days of cover on hand
-               
+                , EGO_ITEM_EFF_B                              itemEffB
+                , EGO_ITEM_EFF_B                              itemEffB_sp
+
 
                         WHERE
                 mrp_name.PLAN_ID = orders.PLAN_ID
@@ -172,6 +179,15 @@ with
                                 AND item_method.INVENTORY_ITEM_ID =  orders.ASSEMBLY_ITEM_ID
                                 AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
                                 and item_method.plan_id = orders.plan_id
+
+                                -- dev2  sort attr
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG_SALES' = itemEffB.CONTEXT_CODE(+)
+
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB_sp.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB_sp.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG' = itemEffB_sp.CONTEXT_CODE(+)
 
 
 
@@ -217,10 +233,10 @@ with
         , item_info.PRIMARY_UOM_CODE                                    UOM
 --         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
 --         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
-        , item_info.ATTRIBUTE6                                          ATTRIBUTE6
-        , item_info.ATTRIBUTE7                                          ATTRIBUTE7
-                , item_info.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-        , item_info.ATTRIBUTE2                                          ATTRIBUTE2
+        , item_info.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+        , item_info.ATTRIBUTE5                                          ATTRIBUTE5
+        , itemEffB.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
+        , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
@@ -248,7 +264,9 @@ with
                                 from MSC_SYSTEM_ITEMS_V
                                 where PLAN_ID = -1  )                     mrp_item
                 , INV_ORG_PARAMETERS                       item_store_org
-                 , MSC_AP_ITEM_CATEGORIES_V                   item_cat
+                 , MSC_AP_ITEM_CATEGORIES_V                   item_cat 
+                                 , EGO_ITEM_EFF_B                              itemEffB
+                , EGO_ITEM_EFF_B                              itemEffB_sp
                         WHERE
                 mrp_name.PLAN_ID = orders.PLAN_ID
                                 ---find  only one mrp item
@@ -264,6 +282,14 @@ with
                                 AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
                                 and item_method.plan_id = orders.plan_id
 
+                                -- dev2  sort attr
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG_SALES' = itemEffB.CONTEXT_CODE(+)
+
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB_sp.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB_sp.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG' = itemEffB_sp.CONTEXT_CODE(+)
 
 
 
@@ -304,10 +330,10 @@ with
         , item_info.PRIMARY_UOM_CODE                                    UOM
 --         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
 --         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
-        , item_info.ATTRIBUTE6                                          ATTRIBUTE6
-        , item_info.ATTRIBUTE7                                          ATTRIBUTE7
-                , item_info.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-        , item_info.ATTRIBUTE2                                          ATTRIBUTE2
+         , item_info.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+        , item_info.ATTRIBUTE5                                          ATTRIBUTE5
+        , itemEffB.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
+        , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
@@ -335,7 +361,9 @@ with
                                 from MSC_SYSTEM_ITEMS_V
                                 where PLAN_ID = -1  )                     mrp_item
                 , INV_ORG_PARAMETERS                       item_store_org
-                 , MSC_AP_ITEM_CATEGORIES_V                   item_cat
+                 , MSC_AP_ITEM_CATEGORIES_V                   item_cat 
+                                 , EGO_ITEM_EFF_B                              itemEffB
+                , EGO_ITEM_EFF_B                              itemEffB_sp
                         WHERE
                 mrp_name.PLAN_ID = orders.PLAN_ID
                                 ---find  only one mrp item
@@ -351,7 +379,14 @@ with
                                 AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
                                 and item_method.plan_id = orders.plan_id
 
+                                -- dev2  sort attr
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG_SALES' = itemEffB.CONTEXT_CODE(+)
 
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB_sp.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB_sp.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG' = itemEffB_sp.CONTEXT_CODE(+)
 
 
                                 -- relate  item category
@@ -392,10 +427,10 @@ with
         , item_info.PRIMARY_UOM_CODE                                    UOM
 --         , item_info.PREPROCESSING_LEAD_TIME + item_info.POSTPROCESSING_LEAD_TIME + item_info.FULL_LEAD_TIME          LEAD_TIME
 --         , item_info.MINIMUM_ORDER_QUANTITY                              MIN_QTY
-        , item_info.ATTRIBUTE6                                          ATTRIBUTE6
-        , item_info.ATTRIBUTE7                                          ATTRIBUTE7
-                , item_info.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-        , item_info.ATTRIBUTE2                                          ATTRIBUTE2
+        , item_info.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+        , item_info.ATTRIBUTE5                                          ATTRIBUTE5
+        , itemEffB.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
+        , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
@@ -424,6 +459,8 @@ with
                                 where PLAN_ID = -1  )                     mrp_item
                 , INV_ORG_PARAMETERS                       item_store_org
                  , MSC_AP_ITEM_CATEGORIES_V                   item_cat
+                                 , EGO_ITEM_EFF_B                              itemEffB
+                , EGO_ITEM_EFF_B                              itemEffB_sp
                         WHERE
                 mrp_name.PLAN_ID = orders.PLAN_ID
                                 ---find  only one mrp item
@@ -439,7 +476,14 @@ with
                                 AND item_method.ORGANIZATION_ID   =   orders.ORGANIZATION_ID
                                 and item_method.plan_id = orders.plan_id
 
+                                -- dev2  sort attr
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG_SALES' = itemEffB.CONTEXT_CODE(+)
 
+                                AND item_info.INVENTORY_ITEM_ID = itemEffB_sp.INVENTORY_ITEM_ID(+)
+                                and item_info.ORGANIZATION_ID   = itemEffB_sp.ORGANIZATION_ID(+)
+                                and 'ASWI_GZ_FG' = itemEffB_sp.CONTEXT_CODE(+)
 
 
                                 -- relate  item category
@@ -469,14 +513,16 @@ with
                                                         )
         ),
 
-        real_tab1 AS (
-            SELECT  days_mid.* ,  tab_onhand_forcast.day_of_cover
-            FROM    days_mid ,  tab_onhand_forcast 
-            WHERE  
+        real_tab1
+        AS
+        (
+                SELECT days_mid.* , tab_onhand_forcast.day_of_cover
+                FROM days_mid , tab_onhand_forcast
+                WHERE  
                                                  --                 add   days of cover on hand
                                     days_mid.MRP_ITEM_ID               =  tab_onhand_forcast.INVENTORY_ITEM_ID(+)
-                                AND days_mid.MRP_ITEM_ORG              =  tab_onhand_forcast.ORGANIZATION_ID(+)
-                
+                        AND days_mid.MRP_ITEM_ORG              =  tab_onhand_forcast.ORGANIZATION_ID(+)
+
         ),
         -- list and order  all origin data, ready for next calculate
         mid_tab
@@ -489,10 +535,15 @@ with
                        , real_tab1.ITEM_NUMBER
                        , real_tab1.UOM
                        , real_tab1.RESOURCE_ID
-                       , real_tab1.ATTRIBUTE6                                          ATTRIBUTE6
-                       , real_tab1.ATTRIBUTE7                                          ATTRIBUTE7
-                       , real_tab1.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-                       , real_tab1.ATTRIBUTE2                                          ATTRIBUTE2
+                --        , real_tab1.ATTRIBUTE6                                          ATTRIBUTE6
+                --        , real_tab1.ATTRIBUTE7                                          ATTRIBUTE7
+                --        , real_tab1.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
+                --        , real_tab1.ATTRIBUTE2                                          ATTRIBUTE2
+                        , real_tab1.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+                        , real_tab1.ATTRIBUTE5                                          ATTRIBUTE5
+                        , real_tab1.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
+                        , real_tab1.Attribute_Char1                                   PRODUCT_SPEC
+                        
                        , real_tab1.day_of_cover                                        day_of_cover
 
                        , sum(  real_tab1.ONE_RESOURCE_HOURS           )              ONE_HOURS
@@ -531,13 +582,46 @@ with
         (
 
                 SELECT mid_tab.*, work_hours.ATTRIBUTE_NUMBER1  AS HOURS_NUM
-      , (SUM(mid_tab.ONE_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  ) ) -  mid_tab.ONE_HOURS  as  ONE_RUNNING
 
-      , (SUM(mid_tab.TWO_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  ) ) - mid_tab.TWO_HOURS as  TWO_RUNNING
+                -- denpend on the  sort  category  1、2、3  2020、07、22
+                , CASE WHEN   1 = :P_SORT       THEN 
+                -- order  by   days of  cover 
+       (SUM(mid_tab.ONE_HOURS)      over( order by mid_tab.day_of_cover ) ) -  mid_tab.ONE_HOURS   
+                     WHEN  2  = :P_SORT    THEN 
+       (SUM(mid_tab.ONE_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2, mid_tab.ATTRIBUTE6 ) ) -  mid_tab.ONE_HOURS  
+                     WHEN 3  = :P_SORT   THEN 
+       (SUM(mid_tab.ONE_HOURS)      over( order by  mid_tab.ITEM_ORG  ) ) -  mid_tab.ONE_HOURS   
+                    ELSE NULl END  as  ONE_RUNNING 
 
-      , (SUM(mid_tab.THREE_HOURS)    over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  )) - mid_tab.THREE_HOURS  as  THREE_RUNNING
+       , CASE WHEN  1 = :P_SORT  THEN 
+       (SUM(mid_tab.TWO_HOURS)      over( order by mid_tab.day_of_cover ) ) -  mid_tab.TWO_HOURS   
+                     WHEN 2  = :P_SORT  THEN
+       (SUM(mid_tab.TWO_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2, mid_tab.ATTRIBUTE6 ) ) -  mid_tab.TWO_HOURS  
+                     WHEN 3  = :P_SORT   THEN
+       (SUM(mid_tab.TWO_HOURS)      over( order by  mid_tab.ITEM_ORG  ) ) -  mid_tab.TWO_HOURS   
+                    ELSE NULl END as  TWO_RUNNING 
 
-      , (SUM(mid_tab.FOUR_HOURS)     over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  )) - mid_tab.FOUR_HOURS  as  FOUR_RUNNING
+       , CASE WHEN  1 = :P_SORT  THEN 
+       (SUM(mid_tab.THREE_HOURS)      over( order by mid_tab.day_of_cover ) ) -  mid_tab.THREE_HOURS   
+                     WHEN 2  = :P_SORT  THEN
+       (SUM(mid_tab.THREE_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2, mid_tab.ATTRIBUTE6 ) ) -  mid_tab.THREE_HOURS  
+                     WHEN 3  = :P_SORT   THEN
+       (SUM(mid_tab.THREE_HOURS)      over( order by  mid_tab.ITEM_ORG  ) ) -  mid_tab.THREE_HOURS   
+                    ELSE NULl END as  THREE_RUNNING 
+       , CASE WHEN  1 = :P_SORT  THEN 
+       (SUM(mid_tab.FOUR_HOURS)      over( order by mid_tab.day_of_cover ) ) -  mid_tab.FOUR_HOURS   
+                     WHEN 2  = :P_SORT  THEN 
+       (SUM(mid_tab.FOUR_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2, mid_tab.ATTRIBUTE6 ) ) -  mid_tab.FOUR_HOURS  
+                     WHEN 3  = :P_SORT  THEN
+       (SUM(mid_tab.FOUR_HOURS)      over( order by  mid_tab.ITEM_ORG  ) ) -  mid_tab.FOUR_HOURS   
+                    ELSE NULl  END  as  FOUR_RUNNING
+
+                --       , (SUM(mid_tab.TWO_HOURS)      over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  ) ) - mid_tab.TWO_HOURS as  TWO_RUNNING
+
+                --       , (SUM(mid_tab.THREE_HOURS)    over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  )) - mid_tab.THREE_HOURS  as  THREE_RUNNING
+
+                --       , (SUM(mid_tab.FOUR_HOURS)     over( order by mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  )) - mid_tab.FOUR_HOURS  as  FOUR_RUNNING
+
                 FROM mid_tab ,
                         MSC_DIM_RESOURCE_V         re_id_parent
               , WIS_WORK_CENTERS_VL        work_hours
@@ -729,8 +813,4 @@ FROM cat_tab
 
 
 
-
--- case when :P_SORT  = 1 then mid_tab.INVENTORY_ITEM_ID  end,
--- case when :P_SORT  = 2 then mid_tab.ATTRIBUTE_NUMBER1, mid_tab.ATTRIBUTE2  end,
--- case when :P_SORT  = 3 then mid_tab.ATTRIBUTE2  end,
 

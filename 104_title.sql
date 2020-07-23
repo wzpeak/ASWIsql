@@ -26,5 +26,8 @@
            ,WEEK_START_DATE + 22
            ,WEEK_START_DATE + 23
            ,WEEK_START_DATE + 24
+           ,WEEK_START_DATE + 25
+           ,WEEK_START_DATE + 26
+           ,WEEK_START_DATE + 27
             from MSC_ANALYTIC_CALENDARS_V
             where CALENDAR_DATE = :P_DATE
