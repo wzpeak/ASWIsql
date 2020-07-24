@@ -541,9 +541,9 @@ with
                 --        , real_tab1.ATTRIBUTE2                                          ATTRIBUTE2
                         , real_tab1.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
                         , real_tab1.ATTRIBUTE5                                          ATTRIBUTE5
-                        , real_tab1.ATTRIBUTE_CHAR6                                      PRODUCT_CODE
-                        , real_tab1.Attribute_Char1                                   PRODUCT_SPEC
-                        
+                        , real_tab1.PRODUCT_CODE                                      PRODUCT_CODE
+                        , real_tab1.PRODUCT_SPEC                                      PRODUCT_SPEC
+
                        , real_tab1.day_of_cover                                        day_of_cover
 
                        , sum(  real_tab1.ONE_RESOURCE_HOURS           )              ONE_HOURS
@@ -565,10 +565,15 @@ with
                        ,real_tab1.ITEM_NUMBER
                        ,real_tab1.UOM
                        ,real_tab1.RESOURCE_ID
-                       , real_tab1.ATTRIBUTE6
-                       , real_tab1.ATTRIBUTE7
-                       , real_tab1.ATTRIBUTE_NUMBER1
-                       , real_tab1.ATTRIBUTE2
+                --        , real_tab1.ATTRIBUTE6
+                --        , real_tab1.ATTRIBUTE7
+                --        , real_tab1.ATTRIBUTE_NUMBER1
+                --        , real_tab1.ATTRIBUTE2
+                 , real_tab1.ATTRIBUTE_NUMBER2
+                , real_tab1.ATTRIBUTE5       
+                , real_tab1.PRODUCT_CODE  
+                , real_tab1.PRODUCT_SPEC  
+
                        , real_tab1.day_of_cover
 
         ),

@@ -117,6 +117,7 @@ with
                                                                         SELECT
 
                                 item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+                                ,item_info.DESCRIPTION                                 DESCRIPTION 
         , item_info.ORGANIZATION_ID                                   ITEM_ORG
         , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
         , mrp_item.ORGANIZATION_ID                                      MRP_ITEM_ORG
@@ -134,6 +135,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
+            , orders.USAGE_RATE                                                   USAGE_RATE 
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -227,6 +229,7 @@ with
                         SELECT
 
                                 item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+                                ,item_info.DESCRIPTION                                 DESCRIPTION
         , item_info.ORGANIZATION_ID                                   ITEM_ORG
         , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
         , mrp_item.ORGANIZATION_ID                                      MRP_ITEM_ORG
@@ -240,6 +243,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
+            , 0                                                                   USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -324,6 +328,7 @@ with
                         SELECT
 
                                 item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+                                ,item_info.DESCRIPTION                                 DESCRIPTION
         , item_info.ORGANIZATION_ID                                   ITEM_ORG
         , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
         , mrp_item.ORGANIZATION_ID                                      MRP_ITEM_ORG
@@ -337,6 +342,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
+            , 0                                                                   USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -421,6 +427,7 @@ with
                         SELECT
 
                                 item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+                                ,item_info.DESCRIPTION                                 DESCRIPTION
         , item_info.ORGANIZATION_ID                                   ITEM_ORG
         , mrp_item.INVENTORY_ITEM_ID                                    MRP_ITEM_ID
         , mrp_item.ORGANIZATION_ID                                      MRP_ITEM_ORG
@@ -434,6 +441,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
+            , 0                                                                   USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -529,7 +537,8 @@ with
         mid_tab
         as
         (
-                select real_tab1.INVENTORY_ITEM_ID
+                select  real_tab1.INVENTORY_ITEM_ID
+                       ,real_tab1.DESCRIPTION                                 
                        , real_tab1.ITEM_ORG
                        , real_tab1.MRP_ITEM_ID
                        , real_tab1.MRP_ITEM_ORG
@@ -560,6 +569,7 @@ with
                 FROM real_tab1
                 GROUP BY
                         real_tab1.INVENTORY_ITEM_ID
+                       ,real_tab1.DESCRIPTION 
                        ,real_tab1.ITEM_ORG
                        ,real_tab1.MRP_ITEM_ID
                        ,real_tab1.MRP_ITEM_ORG
