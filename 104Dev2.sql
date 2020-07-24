@@ -137,6 +137,9 @@ with
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
             , orders.USAGE_RATE                                                 USAGE_RATE
+            , 0                                                 USAGE_RATE1
+            , 0                                                 USAGE_RATE2
+            , 0                                                 USAGE_RATE3
             
             --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
@@ -245,7 +248,10 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-             , 0                                       USAGE_RATE
+            , 0                                                 USAGE_RATE
+            , orders.USAGE_RATE                                                 USAGE_RATE1
+            , 0                                                 USAGE_RATE2
+            , 0                                                USAGE_RATE3
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -344,7 +350,10 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-             , 0                                       USAGE_RATE
+                , 0                                                 USAGE_RATE
+            , 0                                                 USAGE_RATE1
+            , orders.USAGE_RATE                                                 USAGE_RATE2
+            , 0                                                USAGE_RATE3
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -443,7 +452,10 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-             , 0                                       USAGE_RATE
+               , 0                                                 USAGE_RATE
+            , 0                                                 USAGE_RATE1
+            , 0                                                USAGE_RATE2
+            , orders.USAGE_RATE                                                 USAGE_RATE3
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -547,7 +559,10 @@ with
                     --    , days_mid.day_of_cover                                        day_of_cover
 
 
-                       , sum(  days_mid.USAGE_RATE           )              USAGE_RATE
+                       , sum(  days_mid.USAGE_RATE            )              USAGE_RATE
+                       , sum(  days_mid.USAGE_RATE1           )              USAGE_RATE1
+                       , sum(  days_mid.USAGE_RATE2           )              USAGE_RATE2
+                       , sum(  days_mid.USAGE_RATE3           )              USAGE_RATE3
 
 
                        , sum(  days_mid.ONE_RESOURCE_HOURS           )              ONE_HOURS
