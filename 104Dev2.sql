@@ -1,4 +1,5 @@
 
+
 with
 
         sum_onhand
@@ -135,8 +136,9 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-            , orders.USAGE_RATE                                                   USAGE_RATE 
---             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
+            , orders.USAGE_RATE                                                 USAGE_RATE
+            
+            --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
             , orders.RESOURCE_HOURS                            ONE_RESOURCE_HOURS
@@ -243,7 +245,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-            , 0                                                                   USAGE_RATE
+             , 0                                       USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -342,7 +344,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-            , 0                                                                   USAGE_RATE
+             , 0                                       USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -441,7 +443,7 @@ with
         , itemEffB_sp.Attribute_Char1                                   PRODUCT_SPEC
 
             , orders.RESOURCE_ID                                                  RESOURCE_ID
-            , 0                                                                   USAGE_RATE
+             , 0                                       USAGE_RATE
 --             ,orders.TRANSACTION_ID                                               TRANSACTION_ID
 
 --             item_info.INVENTORY_ITEM_ID               ONE_INVENTORY_ITEM_ID
@@ -525,67 +527,72 @@ with
         real_tab1
         AS
         (
-                SELECT days_mid.* , tab_onhand_forcast.day_of_cover
-                FROM days_mid , tab_onhand_forcast
-                WHERE  
-                                                 --                 add   days of cover on hand
-                                    days_mid.MRP_ITEM_ID               =  tab_onhand_forcast.INVENTORY_ITEM_ID(+)
-                        AND days_mid.MRP_ITEM_ORG              =  tab_onhand_forcast.ORGANIZATION_ID(+)
+             select   days_mid.INVENTORY_ITEM_ID
+                       ,days_mid.DESCRIPTION                                 
+                       , days_mid.ITEM_ORG
+                       , days_mid.MRP_ITEM_ID
+                       , days_mid.MRP_ITEM_ORG
+                       , days_mid.ITEM_NUMBER
+                       , days_mid.UOM
+                       , days_mid.RESOURCE_ID
+                --        , days_mid.ATTRIBUTE6                                          ATTRIBUTE6
+                --        , days_mid.ATTRIBUTE7                                          ATTRIBUTE7
+                --        , days_mid.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
+                --        , days_mid.ATTRIBUTE2                                          ATTRIBUTE2
+                        , days_mid.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
+                        , days_mid.ATTRIBUTE5                                          ATTRIBUTE5
+                        , days_mid.PRODUCT_CODE                                      PRODUCT_CODE
+                        , days_mid.PRODUCT_SPEC                                      PRODUCT_SPEC
 
+                    --    , days_mid.day_of_cover                                        day_of_cover
+
+
+                       , sum(  days_mid.USAGE_RATE           )              USAGE_RATE
+
+
+                       , sum(  days_mid.ONE_RESOURCE_HOURS           )              ONE_HOURS
+                       , sum(  days_mid.TWO_RESOURCE_HOURS              )           TWO_HOURS
+                       , sum(  days_mid.THREE_RESOURCE_HOURS            )           THREE_HOURS
+                       , sum(  days_mid.FOUR_RESOURCE_HOURS             )           FOUR_HOURS
+                      , sum(    days_mid.ONE_CUMMULATIVE_QUANTITY         )        ONE_CUMMULATIVE_QUANTITY
+                       , sum(    days_mid.TWO_CUMMULATIVE_QUANTITY         )        TWO_CUMMULATIVE_QUANTITY
+                       , sum(    days_mid.THREE_CUMMULATIVE_QUANTITY      )         THREE_CUMMULATIVE_QUANTITY
+                       , sum(    days_mid.FOUR_CUMMULATIVE_QUANTITY       )         FOUR_CUMMULATIVE_QUANTITY
+
+
+                FROM days_mid
+                GROUP BY
+                        days_mid.INVENTORY_ITEM_ID
+                       ,days_mid.DESCRIPTION 
+                       ,days_mid.ITEM_ORG
+                       ,days_mid.MRP_ITEM_ID
+                       ,days_mid.MRP_ITEM_ORG
+                       ,days_mid.ITEM_NUMBER
+                       ,days_mid.UOM
+                       ,days_mid.RESOURCE_ID
+                --        , days_mid.ATTRIBUTE6
+                --        , days_mid.ATTRIBUTE7
+                --        , days_mid.ATTRIBUTE_NUMBER1
+                --        , days_mid.ATTRIBUTE2
+                 , days_mid.ATTRIBUTE_NUMBER2
+                , days_mid.ATTRIBUTE5       
+                , days_mid.PRODUCT_CODE  
+                , days_mid.PRODUCT_SPEC  
+
+
+           
         ),
         -- list and order  all origin data, ready for next calculate
         mid_tab
         as
         (
-                select  real_tab1.INVENTORY_ITEM_ID
-                       ,real_tab1.DESCRIPTION                                 
-                       , real_tab1.ITEM_ORG
-                       , real_tab1.MRP_ITEM_ID
-                       , real_tab1.MRP_ITEM_ORG
-                       , real_tab1.ITEM_NUMBER
-                       , real_tab1.UOM
-                       , real_tab1.RESOURCE_ID
-                --        , real_tab1.ATTRIBUTE6                                          ATTRIBUTE6
-                --        , real_tab1.ATTRIBUTE7                                          ATTRIBUTE7
-                --        , real_tab1.ATTRIBUTE_NUMBER1                                   ATTRIBUTE_NUMBER1
-                --        , real_tab1.ATTRIBUTE2                                          ATTRIBUTE2
-                        , real_tab1.ATTRIBUTE_NUMBER2                                   ATTRIBUTE_NUMBER2
-                        , real_tab1.ATTRIBUTE5                                          ATTRIBUTE5
-                        , real_tab1.PRODUCT_CODE                                      PRODUCT_CODE
-                        , real_tab1.PRODUCT_SPEC                                      PRODUCT_SPEC
+                    SELECT real_tab1.* , tab_onhand_forcast.day_of_cover
+                FROM real_tab1 , tab_onhand_forcast
+                WHERE  
+                                                 --                 add   days of cover on hand
+                                    real_tab1.MRP_ITEM_ID               =  tab_onhand_forcast.INVENTORY_ITEM_ID(+)
+                        AND real_tab1.MRP_ITEM_ORG              =  tab_onhand_forcast.ORGANIZATION_ID(+)
 
-                       , real_tab1.day_of_cover                                        day_of_cover
-
-                       , sum(  real_tab1.ONE_RESOURCE_HOURS           )              ONE_HOURS
-                       , sum(  real_tab1.TWO_RESOURCE_HOURS              )           TWO_HOURS
-                       , sum(  real_tab1.THREE_RESOURCE_HOURS            )           THREE_HOURS
-                       , sum(  real_tab1.FOUR_RESOURCE_HOURS             )           FOUR_HOURS
-                      , sum(    real_tab1.ONE_CUMMULATIVE_QUANTITY         )        ONE_CUMMULATIVE_QUANTITY
-                       , sum(    real_tab1.TWO_CUMMULATIVE_QUANTITY         )        TWO_CUMMULATIVE_QUANTITY
-                       , sum(    real_tab1.THREE_CUMMULATIVE_QUANTITY      )         THREE_CUMMULATIVE_QUANTITY
-                       , sum(    real_tab1.FOUR_CUMMULATIVE_QUANTITY       )         FOUR_CUMMULATIVE_QUANTITY
-
-
-                FROM real_tab1
-                GROUP BY
-                        real_tab1.INVENTORY_ITEM_ID
-                       ,real_tab1.DESCRIPTION 
-                       ,real_tab1.ITEM_ORG
-                       ,real_tab1.MRP_ITEM_ID
-                       ,real_tab1.MRP_ITEM_ORG
-                       ,real_tab1.ITEM_NUMBER
-                       ,real_tab1.UOM
-                       ,real_tab1.RESOURCE_ID
-                --        , real_tab1.ATTRIBUTE6
-                --        , real_tab1.ATTRIBUTE7
-                --        , real_tab1.ATTRIBUTE_NUMBER1
-                --        , real_tab1.ATTRIBUTE2
-                 , real_tab1.ATTRIBUTE_NUMBER2
-                , real_tab1.ATTRIBUTE5       
-                , real_tab1.PRODUCT_CODE  
-                , real_tab1.PRODUCT_SPEC  
-
-                       , real_tab1.day_of_cover
 
         ),
 
