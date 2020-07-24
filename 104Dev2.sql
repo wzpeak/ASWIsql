@@ -847,7 +847,8 @@ SELECT
 
 
 
-FROM cat_tab
+FROM cat_tab  
+           order  by cat_tab.RESOURCE_ID, cat_tab.ONE_RUNNING ,cat_tab.TWO_RUNNING  ,cat_tab.THREE_RUNNING ,cat_tab.FOUR_RUNNING
 
 
 
