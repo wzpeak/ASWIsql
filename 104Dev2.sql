@@ -213,7 +213,7 @@ with
                                 AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
                                 AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
                                 --             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
-                                AND 1 = :P_HIERARCHIES
+                                AND orders.RESOURCE_ID = :P_RESOURCE_ID
 
                                 --              AND orders.PLANNED_ORDER_TYPE  IN('Buy','购买')
 
@@ -225,6 +225,7 @@ with
                                 where CALENDAR_DATE = :P_DATE
                                                                 )
                                                         )
+                                AND 1 = :P_HIERARCHIES
 
                         --         group by   item_info.INVENTORY_ITEM_ID
 
@@ -317,7 +318,7 @@ with
                                 AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
                                 AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
                                 --             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
-                                AND 1 = :P_HIERARCHIES
+                                AND orders.RESOURCE_ID = :P_RESOURCE_ID
 
                                 -- oders   filter
                                 AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
@@ -328,6 +329,7 @@ with
                                 where CALENDAR_DATE = :P_DATE
                                                                 )
                                                         )
+                                AND 1 = :P_HIERARCHIES
 
                 --         group by   item_info.INVENTORY_ITEM_ID
 
@@ -418,7 +420,7 @@ with
                                 AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
                                 AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
                                 --             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
-                                AND 1 = :P_HIERARCHIES
+                                AND orders.RESOURCE_ID = :P_RESOURCE_ID
 
                                 -- oders   filter
                                 AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
@@ -431,6 +433,7 @@ with
                                 where CALENDAR_DATE = :P_DATE)
                                                                 )
                                                         )
+                                AND 1 = :P_HIERARCHIES
 
                 --         group by   item_info.INVENTORY_ITEM_ID
                 UNION ALL
@@ -520,7 +523,7 @@ with
                                 AND mrp_name.COMPILE_DESIGNATOR  = :P_MRP_NAME
                                 AND item_store_org.ORGANIZATION_CODE   = :P_ITEM_ORG
                                 --             AND item_method.MRP_PLANNING_CODE   = 'MPS planning'
-                                AND 1 = :P_HIERARCHIES
+                                AND orders.RESOURCE_ID = :P_RESOURCE_ID
                                 -- oders   filter
                                 AND to_char(orders.END_DATE, 'YYYY-MM-DD')  IN
                                                         (    SELECT to_char(CALENDAR_DATE,'YYYY-MM-DD') set_time
@@ -534,6 +537,7 @@ with
                                 where CALENDAR_DATE = :P_DATE))
                                                                 )
                                                         )
+                                AND 1 = :P_HIERARCHIES
         ),
 
         real_tab1
@@ -849,7 +853,5 @@ SELECT
 
 FROM cat_tab  
            order  by cat_tab.RESOURCE_ID, cat_tab.ONE_RUNNING ,cat_tab.TWO_RUNNING  ,cat_tab.THREE_RUNNING ,cat_tab.FOUR_RUNNING
-
-
 
 
