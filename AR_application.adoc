@@ -1,0 +1,5 @@
+
+AR_RECEIVABLE_APPLICATIONS_ALL  is the application  of  cash receipt 
+
+AR_RECEIVABLE_APPLICATIONS_ALL
+                         APPLIED_CUSTOMER_TRX_ID       <--------->   RA_CUSTOMER_TRX_ALL( the AR  trx ).CUSTOMER_TRX_ID  
