@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2d55537-821e-4ff8-a173-2fb16f9cc83a" name="Default" comment="" />
+    <list default="true" id="a2d55537-821e-4ff8-a173-2fb16f9cc83a" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/AR_application.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/AR_application.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cust_estatement_ASWI.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Cust_estatement_ASWI.sql" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,8 +26,8 @@
       <file leaf-file-name="104Dev2.sql" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/104Dev2.sql">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+            <state relative-caret-position="44">
+              <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -186,8 +189,8 @@
         </subPane>
       </pane>
       <pane id="AndroidView" />
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -271,6 +274,7 @@
       <workItem from="1595473509882" duration="292000" />
       <workItem from="1595512169689" duration="611000" />
       <workItem from="1595515577131" duration="8000" />
+      <workItem from="1596598176551" duration="30000" />
     </task>
     <task id="LOCAL-00001" summary="delete  useless comments">
       <created>1594892291832</created>
@@ -318,7 +322,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35745000" />
+    <option name="totallyTimeSpent" value="35775000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -337,7 +341,7 @@
       <window_info anchor="right" id="JSON Viewer" order="3" weight="0.3297587" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19034852" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1930295" />
       <window_info anchor="bottom" id="Docker" order="7" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -667,8 +671,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/104Dev2.sql">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+        <state relative-caret-position="44">
+          <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
         </state>
       </provider>
     </entry>

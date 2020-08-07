@@ -1,0 +1,26 @@
+<xdofo:inline-total display-condition="exceptlast" name="AcctAmt">
+     <xdofo:show-carry-forward name="AcctAmt" format="99G999G999D00"/>
+</xdofo:inline-total>
+
+<xdofo:inline-total display-condition="exceptfirst" name="EntAmt">Brought Forward: <xdofo:show-brought-forward name="EntAmt" format="99G999G999D00"/>
+</xdofo:inline-total>
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<! -  My CD Listing  - >
+<CATALOG>
+     <CD cattype=Folk>
+<TITLE>Empire Burlesque</TITLE>
+<ARTIST>Bob Dylan</ARTIST>
+<COUNTRY>USA</COUNTRY>
+<PRICE>10.90</PRICE>
+<YEAR>1985</YEAR>
+</CD>
+<CD cattype=Rock>
+     <TITLE>Hide Your Heart</TITLE>
+     <ARTIST>Bonnie Tylor</ARTIST>
+     <COUNTRY>UK</COUNTRY>
+     <PRICE>9.90</PRICE>
+     <YEAR>1988</YEAR>
+</CD>
+</CATALOG>

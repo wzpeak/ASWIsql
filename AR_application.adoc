@@ -3,3 +3,6 @@ AR_RECEIVABLE_APPLICATIONS_ALL  is the application  of  cash receipt
 
 AR_RECEIVABLE_APPLICATIONS_ALL
                          APPLIED_CUSTOMER_TRX_ID       <--------->   RA_CUSTOMER_TRX_ALL( the AR  trx ).CUSTOMER_TRX_ID  
+
+APPLIED_CUSTOMER_TRX_ID 这个字段就是 就是被核销的 invoice 的id  
+CUSTOMER_TRX_ID   这个字段 是 被核销的 CM 的id  （只有一条记录保存  invocie 核销CM ）
