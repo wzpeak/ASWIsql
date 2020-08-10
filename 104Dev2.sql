@@ -609,7 +609,7 @@ with
                 FROM real_tab1 , tab_onhand_forcast
                 WHERE  
                                                  --                 add   days of cover on hand
-                                    real_tab1.MRP_ITEM_ID               =  tab_onhand_forcast.INVENTORY_ITEM_ID(+)
+                            real_tab1.MRP_ITEM_ID               =  tab_onhand_forcast.INVENTORY_ITEM_ID(+)
                         AND real_tab1.MRP_ITEM_ORG              =  tab_onhand_forcast.ORGANIZATION_ID(+)
 
 
