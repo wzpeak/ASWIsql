@@ -274,19 +274,17 @@ SELECT
         , item_info.PRIMARY_UOM_CODE                                 UOM
         , item_cate_name.CATEGORY_NAME                               CATEGORY_NAME
 
-        -- , orders.ORDER_QUANTITY                                      onhand_qty
-                        , SUM(
-                CASE WHEN  orders.ORDER_TYPE = 18 
-                     THEN  orders.ORDER_QUANTITY
-                     ELSE  0
-                END  
-                )  as   onhand_qty
-                        , SUM(
-                CASE WHEN  orders.ORDER_TYPE = 1029 
-                     THEN  orders.ORDER_QUANTITY
-                     ELSE  0
-                END  
-                )  as   forcast_qty
+        , orders.ORDER_QUANTITY                                      onhand_qty
+                        
+                -- CASE WHEN  orders.ORDER_TYPE = 18 
+                --      THEN  orders.ORDER_QUANTITY
+                --      ELSE  0
+                -- END    as   onhand_qty             ---- this is  onhand 
+                --         , 
+                -- CASE WHEN  orders.ORDER_TYPE = 1029 
+                --      THEN  orders.ORDER_QUANTITY
+                --      ELSE  0
+                -- END   as   forcast_qty             ---this is  forcast
 
 FROM
         EGP_SYSTEM_ITEMS_V                            item_info          -- system item table
@@ -318,7 +316,64 @@ WHERE
         --- get item category name
         AND item_cat.CATEGORY_ID = item_cate_name.CATEGORY_ID
         -- order type = onhand  
-        AND orders.ORDER_TYPE  IN( 18,1029)
+        AND orders.ORDER_TYPE  = 18
+        --  fileter  schedule name 
+        -- AND orders.SCHEDULE_NAME  = :P_SCHEDULE_NAME  
+
+        AND orders.PLAN_ID    = -1 ---- hard codding
+---    second part   order schedule order  forcast two  months------------
+SELECT
+        item_info.INVENTORY_ITEM_ID                                INVENTORY_ITEM_ID
+        , item_info.DESCRIPTION                                      DESCRIPTION 
+        , item_info.ORGANIZATION_ID                                  ITEM_ORG
+        , mrp_item.INVENTORY_ITEM_ID                                 MRP_ITEM_ID
+        , mrp_item.ORGANIZATION_ID                                   MRP_ITEM_ORG
+        , item_info.ITEM_NUMBER                                      ITEM_NUMBER
+        , item_info.PRIMARY_UOM_CODE                                 UOM
+        , item_cate_name.CATEGORY_NAME                               CATEGORY_NAME
+
+                      
+               , CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(sysdate, 'mm')  AND   sysdate 
+                     THEN  orders.ORDER_QUANTITY
+                     ELSE  0
+                END    as   forcast_one_qty             ---- this is  forcast_qty this month 
+                        , 
+                CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(ADD_MONTHS(SYSDATE, 1), 'mm')  AND   trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
+                     THEN  orders.ORDER_QUANTITY
+                     ELSE  0
+                END   as   forcast_two_qty              --- this is  forcast_qty nest month 
+
+FROM
+        EGP_SYSTEM_ITEMS_V                            item_info          -- system item table
+                , (select *
+        from MSC_SYSTEM_ITEMS_V
+        where PLAN_ID = -1  )                        mrp_item          -- mrp module item table
+                , MSC_AP_ITEM_CATEGORIES_V                      item_cat          -- item categories 
+                -- , EGO_ITEM_EFF_B                                itemEffB
+		, INV_ORG_PARAMETERS                            item_store_org    -- item org
+
+                , MSC_ANALYTIC_FACT_ORD_V                       orders           --  mrp  original  orders  (not  manufacture)
+
+		, MSC_AP_CATALOG_CATEGORIES_V                   item_cate_name
+
+WHERE 
+        mrp_item.ITEM_NAME           =  item_info.ITEM_NUMBER
+        AND mrp_item.ORGANIZATION_CODE   =  item_store_org.ORGANIZATION_CODE
+        AND item_info.ORGANIZATION_ID    =  item_store_org.ORGANIZATION_ID
+
+        -- 关联物料与类别
+        AND item_cat.INVENTORY_ITEM_ID =   item_info.INVENTORY_ITEM_ID
+        AND item_cat.ORGANIZATION_ID   =   item_info.ORGANIZATION_ID
+        AND (item_cat.CATEGORY_ID  IN (:P_ITEM_CATE) OR 'val' IN (:P_ITEM_CATE || 'val'))
+
+        --取Order
+        AND orders.INVENTORY_ITEM_ID =  mrp_item.INVENTORY_ITEM_ID
+        AND orders.ORGANIZATION_ID   =  mrp_item.ORGANIZATION_ID
+
+        --- get item category name
+        AND item_cat.CATEGORY_ID = item_cate_name.CATEGORY_ID
+        -- order type = onhand  
+        AND orders.ORDER_TYPE  = 1029
         --  fileter  schedule name 
         -- AND orders.SCHEDULE_NAME  = :P_SCHEDULE_NAME  
 
