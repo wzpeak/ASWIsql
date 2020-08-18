@@ -276,15 +276,7 @@ SELECT
 
         , orders.ORDER_QUANTITY                                      onhand_qty
                         
-                -- CASE WHEN  orders.ORDER_TYPE = 18 
-                --      THEN  orders.ORDER_QUANTITY
-                --      ELSE  0
-                -- END    as   onhand_qty             ---- this is  onhand 
-                --         , 
-                -- CASE WHEN  orders.ORDER_TYPE = 1029 
-                --      THEN  orders.ORDER_QUANTITY
-                --      ELSE  0
-                -- END   as   forcast_qty             ---this is  forcast
+
 
 FROM
         EGP_SYSTEM_ITEMS_V                            item_info          -- system item table
@@ -333,12 +325,12 @@ SELECT
         , item_cate_name.CATEGORY_NAME                               CATEGORY_NAME
 
                       
-               , CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(sysdate, 'mm')  AND   sysdate 
+               , CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(sysdate, 'mm')  AND  LAST_DAY(TRUNC(SYSDATE))+1-1/86400 
                      THEN  orders.ORDER_QUANTITY
-                     ELSE  0
+                     ELSE  0                                           
                 END    as   forcast_one_qty             ---- this is  forcast_qty this month 
                         , 
-                CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(ADD_MONTHS(SYSDATE, 1), 'mm')  AND   trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
+                CASE WHEN  orders.SUGGESTED_DUE_DATE BETWEEN  trunc(ADD_MONTHS(SYSDATE, 1), 'mm')  AND   LAST_DAY(TRUNC(ADD_MONTHS(SYSDATE,1)))+1-1/86400 
                      THEN  orders.ORDER_QUANTITY
                      ELSE  0
                 END   as   forcast_two_qty              --- this is  forcast_qty nest month 

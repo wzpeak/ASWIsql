@@ -72,31 +72,20 @@ SELECT
           , work_info_tab.ORGANIZATION_ID 
           -- , work_info_tab.WORK_ORDER_ID
 
-           ,SUM( CASE WHEN  work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(sysdate, 'mm')  AND   sysdate
-                     THEN  work_info_tab.OP_IN_PROCESS_QUANTITY 
-                     ELSE  0
-                END  ) as   process_one_qty             ----   IN_PROCESS_QUANTITY   this   month 
+           ,SUM(  NVL(work_info_tab.OP_IN_PROCESS_QUANTITY ,0 ) )   as   process_qty                  ----   IN_PROCESS_QUANTITY   
 
-           ,SUM( CASE WHEN  work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(ADD_MONTHS(SYSDATE, 1), 'mm')  AND  
-            trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
-                     THEN  work_info_tab.OP_IN_PROCESS_QUANTITY 
-                     ELSE  0
-                END  )  as   process_two_qty             ----   IN_PROCESS_QUANTITY   next   month 
-           ,SUM( CASE WHEN  work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(sysdate, 'mm')  AND   sysdate
-                     THEN  work_info_tab.OP_COMPLETED_QUANTITY 
-                     ELSE  0
-                END )   as   completed_one_qty             ----   COMPLETED_QUANTITY   this   month 
 
-           ,SUM( CASE WHEN  work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(ADD_MONTHS(SYSDATE, 1), 'mm')  AND  
-            trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
-                     THEN  work_info_tab.OP_COMPLETED_QUANTITY 
+           ,SUM( CASE WHEN  work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(sysdate, 'mm')  AND   sysdate
+                     THEN  NVL( work_info_tab.OP_COMPLETED_QUANTITY ,0)
                      ELSE  0
-                END  )  as   completed_two_qty             ----   COMPLETED_QUANTITY   next   month 
+                END )   as   completed__qty             ----   COMPLETED_QUANTITY   this   month 
+
+
 
 
 
 FROM work_info_tab
-WHERE work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(sysdate, 'mm')  AND  trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
+---WHERE work_info_tab.PLANNED_COMPLETION_DATE  BETWEEN  trunc(sysdate, 'mm')  AND  trunc( LAST_DAY(ADD_MONTHS(SYSDATE, 1)) + 1 ,'dd' ) 
 GROUP BY  
             work_info_tab.ORGANIZATION_CODE 
           , work_info_tab.ITEM_NUMBER 
