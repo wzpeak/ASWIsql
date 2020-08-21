@@ -45,7 +45,7 @@ SELECT
     sub_customer_tab.PARTY_NUMBER             
 
 FROM
-     HZ_PARTIES                               customer_tab  -- customer  table
+      HZ_PARTIES                               customer_tab  -- customer  table
     , HZ_PARTIES                               sub_customer_tab  -- customer  table
     , HZ_CUST_ACCOUNTS                         cust_acct_tab --  customer's account table
     , HZ_CUST_ACCOUNTS                         to_acct_tab  --  customer's account table
@@ -63,5 +63,15 @@ WHERE
     AND customer_tab.PARTY_ID = cust_acct_tab.PARTY_ID
     -- find the input customer name's info
     AND customer_tab.PARTY_NAME = :P_CUSTOMER_NAME
+
+
+SELECT HZ_PARTY_SITES.*  
+  
+FROM  HZ_PARTIES party_info ,HZ_CUST_ACCOUNTS acct_info , HZ_CUST_ACCT_SITES_ALL site_info , HZ_PARTY_SITES 
+WHERE  
+        party_info.PARTY_ID  = acct_info.PARTY_ID 
+    and acct_info.CUST_ACCOUNT_ID   =  site_info.CUST_ACCOUNT_ID 
+    and site_info.PARTY_SITE_ID = HZ_PARTY_SITES.PARTY_SITE_ID
+
 
       

@@ -108,7 +108,7 @@ WITH
                             , inv_and_ad.TRX_DATE
                             , inv_and_ad.TRX_CLASS
                             , inv_and_ad.ACCTD_AMOUNT
-                            , inv_and_ad.ACCTD_AMOUNT  -  SUM(ABS(applied_tab.AMOUNT_APPLIED))   total_ap_amt
+                            , inv_and_ad.ACCTD_AMOUNT  -  SUM(ABS(NVL(applied_tab.AMOUNT_APPLIED,0)))   total_ap_amt
     FROM inv_and_ad , AR_RECEIVABLE_APPLICATIONS_ALL     applied_tab
     WHERE 
                 inv_and_ad.CUSTOMER_TRX_ID = applied_tab.APPLIED_CUSTOMER_TRX_ID(+)
@@ -257,9 +257,25 @@ where  party_info.PARTY_ID = pty_act.PARTY_ID
 
 -- <?sum(TOTAL_AP_AMT)?>   trunc(sysdate, 'mm') 
 
--- <?sum(ACCTD_AMOUNT[../TRX_CLASS='INV'])?> 
+-- <?sum(TOTAL_AP_AMT[../BF_STATUS='BF'])?> 
+-- <?sum(TOTAL_AP_AMT[../ALL_DETAILS='NOT_SHOW'])?> 
+-- <?sum(TOTAL_AP_AMT[../LST_TWO='LST_TWO'])?> 
+-- <?sum(TOTAL_AP_AMT[../LST_THREE='LST_THREE'])?> 
 
 
 -- <?if:TRX_DATE>'2020/08/10'?>
 
 -- <?sum(ACCTD_AMOUNT[../TRX_DATE > sysdate])?> 
+
+-- <?format-date:TRX_DATE; 'DD/MM/YYYY'?>
+-- <?format-date:G_2/LAST_THR_MONTH; 'YYYY年M月'?>
+
+
+-- <?sum(ACCTD_AMOUNT)?><?ACCTD_AMOUNT?>
+<?format-number(ACCTD_AMOUNT,'#,##0.00;-#,##0.00')?>
+<?format-number(TOTAL_AP_AMT,'#,##0.00;-#,##0.00')?>
+<?format-number(sum(TOTAL_AP_AMT[../BF_STATUS='BF']),'#,##0.00;-#,##0.00')?>
+-- <?for-each:current-group()?>
+<?sum(TOTAL_AP_AMT[../BF_STATUS='BF'])?>
+
+<?sum(TOTAL_AP_AMT[../ALL_DETAILS='SHOW'])?>+<?sum(TOTAL_AP_AMT[../LST_TWO='LST_TWO'])?>+<?sum(TOTAL_AP_AMT[../LST_THREE='LST_THREE'])?>

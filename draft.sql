@@ -45,8 +45,37 @@ WHERE
   AND item_cat.INVENTORY_ITEM_ID =   item_info.INVENTORY_ITEM_ID
   AND item_cat.ORGANIZATION_ID   =   item_info.ORGANIZATION_ID
   AND (item_cat.CATEGORY_ID  IN (:P_ITEM_CATE) OR 'val' IN (:P_ITEM_CATE || 'val'))
-								
-								--没问题，已经去重
+
+--没问题，已经去重
 
 -- Mast_item.item_code
 -- Mast_item.item_org
+
+
+
+
+-- select DISTINCT PAPER_DOCUMENT_NUMBER
+-- from IBY_PAYMENTS_ALL
+-- where   IBY_PAYMENTS_ALL .PAPER_DOCUMENT_NUMBER is  not null
+
+
+LEGAL_ENTITY_ID (300000001629074)
+--  find  entity  address
+
+select REGISTERED_NAME, REGISTRATION_NUMBER,
+  ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4,
+  CITY, STATE, PROVINCE, COUNTY, ADDRESS_STYLE,
+  ADDRESS_LINES_PHONETIC, COUNTRY, POSTAL_CODE
+from xle_registrations a1,
+  xle_entity_profiles a2,
+  HZ_LOCATIONS A3
+where 1=1
+  and a2.legal_entity_id=a1.source_id
+  and source_table='XLE_ENTITY_PROFILES'
+  and a1.location_id=a3.location_id
+
+  and a2.LEGAL_ENTITY_ID = 300000001629074
+
+
+
+  select  *  from  XLE_ENTITY_PROFILES   where   LEGAL_ENTITY_ID = 300000001629074
